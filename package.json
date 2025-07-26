@@ -11,7 +11,7 @@
   ],
   "scripts": {
     "build": "tsup src/*.ts --format esm --dts --clean",
-    "dev": "cd ../magnit-ceapp-taskboard-manager && npm run package",
+    "dev": "cd ../magnit-ceapp-taskboard-manager && npm run dev",
     "lint": "tsup src/*.ts --format esm --tsconfig ./tsconfig.lint.json",
     "package": "npm run dev && npm run build"
   },

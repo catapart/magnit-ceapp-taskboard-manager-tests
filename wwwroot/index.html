@@ -9,6 +9,7 @@
         article.basic .example { display: grid; gap: 1em; position: relative; }
     </style>
     <script type="module" src="./dist/code-tests.element.js"></script>
+    <script type="module" src="./dist/taskboard-manager.element.js"></script>
 </head>
 <body>
     <main class="centered-single-column">
@@ -29,7 +30,7 @@
                 }
             </style>
             <div class="example">
-                <taskboard-manager></taskboard-manager>
+                <taskboard-manager root-path="magnit-ceapp-taskboard-manager-tests/wwwroot"></taskboard-manager>
                 <code-tests src="./dist/board.tests.js">
                     <span slot="title">Board</span>
                 </code-tests>
