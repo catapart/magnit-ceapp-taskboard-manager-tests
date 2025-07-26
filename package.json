@@ -1,0 +1,51 @@
+{
+  "name": "@magnit-ceapp/taskboard-manager-tests",
+  "version": "0.0.0",
+  "description": "A project for running tests on the @magnit-ceapp/taskboard-manager custom element.",
+  "type": "module",
+  "main": "",
+  "module": "",
+  "types": "",
+  "files": [
+    "wwwroot/dist"
+  ],
+  "scripts": {
+    "build": "tsup src/*.ts --format esm --dts --clean",
+    "dev": "cd ../magnit-ceapp-taskboard-manager && npm run package",
+    "lint": "tsup src/*.ts --format esm --tsconfig ./tsconfig.lint.json",
+    "package": "npm run dev && npm run build"
+  },
+  "keywords": [
+    "custom",
+    "element",
+    "html",
+    "browser",
+    "task",
+    "taskboard",
+    "app",
+    "task management",
+    "kanban",
+    "tasklist",
+    "test",
+    "testing"
+  ],
+  "author": "catapart",
+  "license": "CC0-1.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/catapart/magnit-ceapp-taskboard-manager-tests"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.27.7",
+    "@types/three": "^0.177.0",
+    "minify": "^11.4.0",
+    "terser": "^5.31.3",
+    "tsup": "^8.2.0",
+    "typescript": "^5.5.3"
+  },
+  "dependencies": {
+    "@game-frame/game": "^0.0.4",
+    "@magnit-ce/code-tests": "^0.0.2",
+    "three": "^0.177.0"
+  }
+}

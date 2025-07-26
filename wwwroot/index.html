@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taskboard Manager Tests</title>
+    <link rel="stylesheet" href="./demo-page.css">
+    <style>
+        article.basic .example { display: grid; gap: 1em; position: relative; }
+    </style>
+    <script type="module" src="./dist/code-tests.element.js"></script>
+</head>
+<body>
+    <main class="centered-single-column">
+        <header class="full-width">
+            <div class="content centered-single-column">
+                <h1>Taskboard Manager | Tests</h1>
+            </div>
+        </header>
+        <h2>Tests</h2>
+        <article class="basic">
+            <style>
+                canvas { border: solid 1px; }
+
+                code-tests::part(test-result)
+                {
+                    max-height: 300px;
+                    overflow: auto;
+                }
+            </style>
+            <div class="example">
+                <taskboard-manager></taskboard-manager>
+                <code-tests src="./dist/board.tests.js">
+                    <span slot="title">Board</span>
+                </code-tests>
+            </div>
+        </article>
+    </main>
+</body>
+</html>
