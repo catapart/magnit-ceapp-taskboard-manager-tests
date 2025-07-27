@@ -7615,7 +7615,7 @@ var ConfigPanelElement = class extends HTMLElement {
     return this.findElement("history-panel").addActionHistoryEntry(action, type, properties);
   }
   async clearData() {
-    this.findElement("data-panel").clearData();
+    return this.findElement("data-panel").clearData();
   }
 };
 if (customElements.get(COMPONENT_TAG_NAME15) == null) {
@@ -10662,7 +10662,7 @@ var TaskboardManagerElement = class extends HTMLElement {
     });
   }
   async clearData() {
-    this.findElement("config-panel").clearData();
+    return this.findElement("config-panel").clearData();
   }
   // async clearHistory()
   // {

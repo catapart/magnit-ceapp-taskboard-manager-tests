@@ -30,7 +30,13 @@
                 }
             </style>
             <div class="example">
-                <taskboard-manager root-path="magnit-ceapp-taskboard-manager-tests/wwwroot"></taskboard-manager>
+                <taskboard-manager root-path="/magnit-ceapp-taskboard-manager-tests/wwwroot"></taskboard-manager>
+                <code-tests src="./dist/utility.tests.js">
+                    <span slot="title">Utility</span>
+                </code-tests>
+                <code-tests src="./dist/app.tests.js">
+                    <span slot="title">App</span>
+                </code-tests>
                 <code-tests src="./dist/board.tests.js">
                     <span slot="title">Board</span>
                 </code-tests>

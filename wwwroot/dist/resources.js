@@ -1,6 +1,10 @@
-// src/resources.ts
-function getResource() {
-}
+import {
+  getAllAppData,
+  getAllData,
+  initResources
+} from "./chunk-Y2HPBQSX.js";
 export {
-  getResource
+  getAllAppData,
+  getAllData,
+  initResources
 };

@@ -1,10 +1,24 @@
 // src/board.tests.ts
 var board_tests_default = {
-  "should show welcome on first start": async () => {
+  "should display list placeholders": async () => {
   },
-  "should create and open new board from welcome new board button": async () => {
+  "should collapse list": async () => {
   },
-  "should create and open new board from app menu new board button": async () => {
+  "should uncollapse list": async () => {
+  },
+  "should update list color": async () => {
+  },
+  "should update list name": async () => {
+  },
+  "should add new task": async () => {
+  },
+  "should update task color": async () => {
+  },
+  "should update task description": async () => {
+  },
+  "should update task isFinished value": async () => {
+  },
+  "should remove task": async () => {
   }
 };
 export {
