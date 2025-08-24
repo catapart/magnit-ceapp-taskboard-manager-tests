@@ -1,4 +1,4 @@
-import { expect } from '@magnit-ce/code-tests';
+import { expect } from '@magnit-ce/test-runner';
 
 export default {
     'should log create board to action history': async () =>

@@ -1,5 +1,5 @@
 declare const _default: {
-    BEFOREALL: () => Promise<void>;
+    beforeall: () => Promise<void>;
     'should reset app': () => Promise<void>;
 };
 

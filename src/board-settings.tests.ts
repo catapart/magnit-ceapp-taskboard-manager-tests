@@ -1,4 +1,4 @@
-import { expect } from '@magnit-ce/code-tests';
+import { expect } from '@magnit-ce/test-runner';
 
 export default {
     'should update board name in sidebar': async () =>

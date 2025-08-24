@@ -1,6 +1,7 @@
 import {
+  HookType,
   expect
-} from "./chunk-BW7YVIM5.js";
+} from "./chunk-EBJVJICN.js";
 import {
   getAllAppData,
   initResources
@@ -9,11 +10,11 @@ import {
 // src/utility.tests.ts
 var manager = document.querySelector("taskboard-manager");
 var utility_tests_default = {
-  BEFOREALL: async () => {
+  [HookType.BeforeAll]: async () => {
     await initResources();
   },
   "should reset app": async () => {
-    await manager.clearData();
+    await manager.clearData(false);
     const appData = await getAllAppData();
     console.log(appData);
     await expect(appData).toBeDefined();

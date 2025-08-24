@@ -1,3 +1,3 @@
-import { CodeTestsElement } from "@magnit-ce/code-tests";
+import { CodeTestsElement } from '@magnit-ce/test-runner';
 
 export { CodeTestsElement }

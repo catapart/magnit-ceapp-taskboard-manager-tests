@@ -1,6 +1,6 @@
 import {
   expect
-} from "./chunk-BW7YVIM5.js";
+} from "./chunk-EBJVJICN.js";
 
 // src/app.tests.ts
 var manager = document.querySelector("taskboard-manager");

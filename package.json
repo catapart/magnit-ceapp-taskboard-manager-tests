@@ -45,7 +45,7 @@
   },
   "dependencies": {
     "@game-frame/game": "^0.0.4",
-    "@magnit-ce/code-tests": "^0.0.2",
+    "@magnit-ce/test-runner": "^0.0.6",
     "three": "^0.177.0"
   }
 }

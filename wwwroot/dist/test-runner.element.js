@@ -1,6 +1,6 @@
 import {
-  CodeTestsElement
+  TestRunnerElement
 } from "./chunk-EBJVJICN.js";
 export {
-  CodeTestsElement
+  TestRunnerElement
 };

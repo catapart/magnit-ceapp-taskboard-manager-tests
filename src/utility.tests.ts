@@ -1,17 +1,17 @@
-import { BEFOREALL, expect } from '@magnit-ce/code-tests';
+import { HookType, expect } from '@magnit-ce/test-runner';
 import { TaskboardManagerElement } from './taskboard-manager.element';
 import { getAllAppData, initResources } from './resources';
 
 const manager = document.querySelector<TaskboardManagerElement>('taskboard-manager')!;
 
 export default {
-    BEFOREALL: async () =>
+    [HookType.BeforeAll]: async () =>
     {
         await initResources();
     },
     'should reset app': async () =>
     {
-        await manager.clearData();
+        await manager.clearData(false);
         const appData = await getAllAppData();
         console.log(appData);
 

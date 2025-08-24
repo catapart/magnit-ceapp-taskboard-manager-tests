@@ -1,1 +1,1 @@
-export { CodeTestsElement } from '@magnit-ce/code-tests';
+export { CodeTestsElement } from '@magnit-ce/test-runner';

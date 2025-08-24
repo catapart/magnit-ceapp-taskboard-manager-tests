@@ -1,7 +1,7 @@
 lockfileVersion: '9.0'
 
 settings:
-  autoInstallPeers: false
+  autoInstallPeers: true
   excludeLinksFromLockfile: false
 
 importers:
@@ -11,9 +11,9 @@ importers:
       '@game-frame/game':
         specifier: ^0.0.4
         version: 0.0.4
-      '@magnit-ce/code-tests':
-        specifier: ^0.0.2
-        version: 0.0.2
+      '@magnit-ce/test-runner':
+        specifier: ^0.0.6
+        version: 0.0.6
       three:
         specifier: ^0.177.0
         version: 0.177.0
@@ -424,8 +424,11 @@ packages:
   '@jridgewell/trace-mapping@0.3.29':
     resolution: {integrity: sha512-uw6guiW/gcAGPDhLmd77/6lW8QLeiV5RUTsAX46Db6oLhGaVj4lhnPwb184s1bkc8kdVg/+h988dro8GRDpmYQ==}
 
-  '@magnit-ce/code-tests@0.0.2':
-    resolution: {integrity: sha512-rRU5/L+XHbPWGT5k3lGpAvZ03eheP/wIrPBtGgpgPJqnh081svzo1BopVgb/lAm0ioP/ITwn3ppBBDxbxvgAjg==}
+  '@magnit-ce/code-tests@0.0.13':
+    resolution: {integrity: sha512-dNGNso0Im1MsZfDwn6ePJBTIbkewmVgqqeSr1uYTUnymJOUELM0qpAhV6zPXJMkYqHT62TSAq9XQGIIf9il6Ww==}
+
+  '@magnit-ce/test-runner@0.0.6':
+    resolution: {integrity: sha512-EttfU2igEfp4GsMPMJBZfMCewreqXmmicrNVkU0JvHzPBLT3RlU3hQx1yg5/Mfrt0XQXeXBMNqJz8LOuBahAQQ==}
 
   '@manypkg/find-root@1.1.0':
     resolution: {integrity: sha512-mki5uBvhHzO8kYYix/WRy2WX8S3B5wdVSc9D6KcU5lQNglP2yt58/VfLuAK49glRXChosY8ap2oJ1qgma3GUVA==}
@@ -1702,8 +1705,13 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.4
 
-  '@magnit-ce/code-tests@0.0.2':
+  '@magnit-ce/code-tests@0.0.13':
     dependencies:
+      ce-part-utils: 0.0.0
+
+  '@magnit-ce/test-runner@0.0.6':
+    dependencies:
+      '@magnit-ce/code-tests': 0.0.13
       ce-part-utils: 0.0.0
 
   '@manypkg/find-root@1.1.0':

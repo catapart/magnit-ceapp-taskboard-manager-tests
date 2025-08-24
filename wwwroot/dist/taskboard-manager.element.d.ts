@@ -147,7 +147,7 @@ declare class TaskboardManagerElement extends HTMLElement {
     openBoard(id: string): Promise<void>;
     refreshBoard(): Promise<void>;
     closeBoard(): Promise<void>;
-    addBoard(): Promise<void>;
+    addBoard(): Promise<TaskBoardRecord>;
     editBoard(boardId: string): void;
     openBoardSettings(id: string): Promise<void>;
     exportBoard(id: string): Promise<void>;
@@ -155,7 +155,7 @@ declare class TaskboardManagerElement extends HTMLElement {
     removeBoard(boardId: string, confirm?: boolean): Promise<void>;
     duplicateBoard(id: string): Promise<void>;
     closeBoardSettings(): Promise<unknown>;
-    clearData(): Promise<void>;
+    clearData(confirm?: boolean): Promise<void>;
     addTask(list: TaskListElement, order: number): void;
     static observedAttributes: string[];
     attributeChangedCallback(attributeName: string, _oldValue: string, newValue: string): void;
