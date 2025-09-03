@@ -1,8 +1,60 @@
 import { expect } from '@magnit-ce/test-runner';
+import { TaskboardManagerElement } from './taskboard-manager.element';
+
+const target = document.querySelector<TaskboardManagerElement>('taskboard-manager')!;
+const appMenu = target.shadowRoot!.querySelector('app-menu')!;
+const configPanel = target.shadowRoot!.querySelector('config-panel')!;
+const historyPanel = configPanel.shadowRoot!.querySelector('history-panel')!;
 
 export default {
     'should log create board to action history': async () =>
     {
+        try
+        {
+            await target.clearData(false);
+            const newBoardButton = appMenu.shadowRoot!.querySelector<HTMLButtonElement>('.new-board-button')!;
+            const openSettingsButton = appMenu.shadowRoot!.querySelector<HTMLButtonElement>('#open-settings-button')!;
+            // const dataNavItem = configPanel.shadowRoot!.querySelector<HTMLAnchorElement>('#data-nav-item')!;
+            const historyNavItem = configPanel.shadowRoot!.querySelector<HTMLAnchorElement>('#history-nav-item')!;
+            console.log(newBoardButton);
+            newBoardButton.click();
+
+            const boardId = await new Promise(async (resolve, reject) =>
+            {
+                await new Promise((done) => setTimeout(done, 300));
+                const boardElement = appMenu.shadowRoot!.querySelector<HTMLElement>('.board');
+                if(boardElement == null)
+                {
+                    reject();
+                    return;
+                }
+                const route = boardElement.dataset.route;
+                if(route == null)
+                {
+                    reject();
+                    return;
+                }
+
+                resolve(route.substring(6));
+            });
+
+            openSettingsButton.click();
+            historyNavItem.click();
+
+            const entry = historyPanel.shadowRoot!.querySelector<HTMLElement>(`[data-entry]`)!;
+
+            await expect(entry).toBeDefined();
+
+            const targetIdElement = entry.querySelector('.target-id')!;
+            await expect(targetIdElement).toBeDefined();
+
+            const targetId = targetIdElement.textContent;
+            await expect(boardId).toBe(targetId);
+        }
+        finally
+        {
+            
+        }
     },
     'should log update board to action history': async () =>
     {

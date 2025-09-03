@@ -4698,7 +4698,7 @@ var DataPanelElement = class extends HTMLElement {
         return;
       }
     }
-    this.#closeBoard();
+    await this.#closeBoard();
     await DataService.clearAllData();
     this.#refreshBoardCollections();
     this.#refreshRecentBoards();

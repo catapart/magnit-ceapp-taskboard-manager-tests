@@ -81,3 +81,8 @@ main
 
     display: grid;
 }
+
+test-runner::part(subject)
+{
+    display: grid;
+}
