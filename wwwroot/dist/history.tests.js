@@ -1,6 +1,46 @@
+import {
+  expect
+} from "./chunk-EBJVJICN.js";
+
 // src/history.tests.ts
+var target = document.querySelector("taskboard-manager");
+var appMenu = target.shadowRoot.querySelector("app-menu");
+var configPanel = target.shadowRoot.querySelector("config-panel");
+var historyPanel = configPanel.shadowRoot.querySelector("history-panel");
 var history_tests_default = {
   "should log create board to action history": async () => {
+    try {
+      await target.clearData(false);
+      const newBoardButton = appMenu.shadowRoot.querySelector(".new-board-button");
+      const openSettingsButton = appMenu.shadowRoot.querySelector("#open-settings-button");
+      const historyNavItem = configPanel.shadowRoot.querySelector("#history-nav-item");
+      console.log(newBoardButton);
+      newBoardButton.click();
+      const boardId = await new Promise(async (resolve, reject) => {
+        await new Promise((done) => setTimeout(done, 300));
+        const boardElement = appMenu.shadowRoot.querySelector(".board");
+        if (boardElement == null) {
+          reject();
+          return;
+        }
+        const route = boardElement.dataset.route;
+        if (route == null) {
+          reject();
+          return;
+        }
+        resolve(route.substring(6));
+      });
+      openSettingsButton.click();
+      historyNavItem.click();
+      const entry = historyPanel.shadowRoot.querySelector(`[data-entry]`);
+      await expect(entry).toBeDefined();
+      const targetIdElement = entry.querySelector(".target-id");
+      await expect(targetIdElement).toBeDefined();
+      const targetId = targetIdElement.textContent;
+      await expect(boardId).toBe(targetId);
+    } finally {
+      target.setAttribute("path", "");
+    }
   },
   "should log update board to action history": async () => {
   },

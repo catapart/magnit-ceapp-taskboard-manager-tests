@@ -10,7 +10,7 @@ import {
 // src/utility.tests.ts
 var manager = document.querySelector("taskboard-manager");
 var utility_tests_default = {
-  [HookType.BeforeAll]: async () => {
+  [HookType.RequiredBeforeAny]: async () => {
     await initResources();
   },
   "should reset app": async () => {

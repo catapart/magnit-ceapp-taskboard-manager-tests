@@ -5,7 +5,7 @@ import { getAllAppData, initResources } from './resources';
 const manager = document.querySelector<TaskboardManagerElement>('taskboard-manager')!;
 
 export default {
-    [HookType.BeforeAll]: async () =>
+    [HookType.RequiredBeforeAny]: async () =>
     {
         await initResources();
     },
