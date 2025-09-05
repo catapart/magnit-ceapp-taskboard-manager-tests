@@ -5577,10 +5577,12 @@ var AppMenuElement = class extends HTMLElement {
   #addBoard;
   #editBoard;
   #openBoard;
+  #getCurrentBoardId;
   init(options) {
     this.#addBoard = options.addBoard;
     this.#editBoard = options.editBoard;
     this.#openBoard = options.openBoard;
+    this.#getCurrentBoardId = options.getCurrentBoardId;
     this.addEventListener("click", this.#onClick.bind(this));
     this.addEventListener("keydown", this.#onKeyDown.bind(this));
   }
@@ -5589,10 +5591,15 @@ var AppMenuElement = class extends HTMLElement {
     this.updateBoards(boardRecords);
   }
   updateBoards(boards) {
+    const currentBoardId = this.#getCurrentBoardId();
     const menuItems = [];
     for (let i = 0; i < boards.length; i++) {
       const boardRecord = boards[i];
       const menuItem = this.#createBoardMenuItem(boardRecord);
+      if (boardRecord.id == currentBoardId) {
+        menuItem.classList.add("selected");
+        menuItem.part.add("selected");
+      }
       menuItems.push(menuItem);
     }
     const boardsList = this.findElement("boards");
@@ -10824,6 +10831,24 @@ var TaskboardManagerElement = class extends HTMLElement {
   editBoard(boardId) {
     this.findElement("app-router").navigate(`board/${boardId}#board-settings`);
   }
+  getCurrentBoardId() {
+    const path = this.findElement("app-router").path;
+    if (path == null) {
+      return void 0;
+    }
+    if (path.startsWith("board")) {
+      const id = path.split("/")[1];
+      if (id == null) {
+        return void 0;
+      }
+      if (id.indexOf("#") != -1) {
+        const boardId = id.split("#")[0];
+        return boardId;
+      }
+      return id;
+    }
+    return void 0;
+  }
   async openBoardSettings(id) {
     const board = await DataService.getBoardRecord(id);
     if (board == null) {
@@ -10916,7 +10941,8 @@ var TaskboardManagerElement = class extends HTMLElement {
     this.findElement("app-menu-container").init({
       addBoard: this.addBoard.bind(this),
       editBoard: this.editBoard.bind(this),
-      openBoard: this.openBoard.bind(this)
+      openBoard: this.openBoard.bind(this),
+      getCurrentBoardId: this.getCurrentBoardId.bind(this)
     });
     const welcomePanel = this.findElement("welcome-panel");
     welcomePanel.init({
