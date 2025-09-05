@@ -101,7 +101,7 @@ export default {
         const saveButton = boardSettingsPanel.shadowRoot!.querySelector<HTMLButtonElement>('.action-button.ok');
         if(saveButton == null)
         {
-            throw new Error('Edit button not found');
+            throw new Error('Save button not found');
         }
         saveButton.click();
         await new Promise(resolve => setTimeout(resolve, 300));
