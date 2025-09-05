@@ -109,14 +109,12 @@ export default {
 
         // check config
         const openSettingsButton = appMenu.shadowRoot!.querySelector<HTMLButtonElement>('#open-settings-button')!;
-        // const dataNavItem = configPanel.shadowRoot!.querySelector<HTMLAnchorElement>('#data-nav-item')!;
         const historyNavItem = configPanel.shadowRoot!.querySelector<HTMLAnchorElement>('#history-nav-item')!;
 
         openSettingsButton.click();
         historyNavItem.click();
 
         const entries = historyPanel.shadowRoot!.querySelectorAll<HTMLElement>(`[data-entry]`)!;
-        console.log(entries);
         const entry = entries[entries.length - 1];
 
         await expect(entry).toBeDefined();
@@ -126,7 +124,6 @@ export default {
 
         const targetId = targetIdElement.textContent;
 
-        console.log(targetId, dynamicProperties.targetBoardId);
         await expect(dynamicProperties.targetBoardId).toBe(targetId);
     },
     'should log delete board to action history': async () =>
