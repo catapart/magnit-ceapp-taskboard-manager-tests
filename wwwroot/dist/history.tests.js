@@ -30,15 +30,27 @@ async function initializeBoard() {
     resolve(route.substring(6));
   });
 }
+function getLastHistoryEntry() {
+  const openSettingsButton = appMenu.shadowRoot.querySelector("#open-settings-button");
+  const historyNavItem = configPanel.shadowRoot.querySelector("#history-nav-item");
+  openSettingsButton.click();
+  historyNavItem.click();
+  const entries = historyPanel.shadowRoot.querySelectorAll(`[data-entry]`);
+  const entry = entries[entries.length - 1];
+  return entry;
+}
+function getHistoryEntryTypeAndId(entry) {
+  const targetIdElement = entry.querySelector(".target-id");
+  const targetTypeElement = entry.querySelector(".action-type");
+  const targetId = targetIdElement.textContent;
+  const targetType = targetTypeElement.textContent;
+  return { targetId, targetType };
+}
 var history_tests_default = {
   "should log create board to action history": async () => {
     try {
       await initializeBoard();
-      const openSettingsButton = appMenu.shadowRoot.querySelector("#open-settings-button");
-      const historyNavItem = configPanel.shadowRoot.querySelector("#history-nav-item");
-      openSettingsButton.click();
-      historyNavItem.click();
-      const entry = historyPanel.shadowRoot.querySelector(`[data-entry]`);
+      const entry = getLastHistoryEntry();
       await expect(entry).toBeDefined();
       const targetIdElement = entry.querySelector(".target-id");
       await expect(targetIdElement).toBeDefined();
@@ -70,25 +82,53 @@ var history_tests_default = {
     boardNameInput.value = "Test board name";
     const saveButton = boardSettingsPanel.shadowRoot.querySelector(".action-button.ok");
     if (saveButton == null) {
-      throw new Error("Edit button not found");
+      throw new Error("Save button not found");
     }
     saveButton.click();
     await new Promise((resolve) => setTimeout(resolve, 300));
-    const openSettingsButton = appMenu.shadowRoot.querySelector("#open-settings-button");
-    const historyNavItem = configPanel.shadowRoot.querySelector("#history-nav-item");
-    openSettingsButton.click();
-    historyNavItem.click();
-    const entries = historyPanel.shadowRoot.querySelectorAll(`[data-entry]`);
-    console.log(entries);
-    const entry = entries[entries.length - 1];
+    const entry = getLastHistoryEntry();
     await expect(entry).toBeDefined();
-    const targetIdElement = entry.querySelector(".target-id");
-    await expect(targetIdElement).toBeDefined();
-    const targetId = targetIdElement.textContent;
-    console.log(targetId, dynamicProperties.targetBoardId);
+    const { targetId, targetType } = getHistoryEntryTypeAndId(entry);
     await expect(dynamicProperties.targetBoardId).toBe(targetId);
+    await expect(targetType).toBe("UPDATE");
   },
   "should log delete board to action history": async () => {
+    if (dynamicProperties.targetBoardId == null) {
+      await initializeBoard();
+    }
+    const boardElement = appMenu.shadowRoot.querySelector(".board");
+    if (boardElement == null) {
+      throw new Error("Board not found");
+    }
+    const editButton = boardElement.querySelector(".edit");
+    if (editButton == null) {
+      throw new Error("Edit button not found");
+    }
+    editButton.click();
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    const deleteButton = boardSettingsPanel.shadowRoot.querySelector("#remove-board-button");
+    if (deleteButton == null) {
+      throw new Error("Delete button not found");
+    }
+    deleteButton.click();
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    const confirmButton = target.shadowRoot.querySelector("#confirmation-confirm-button");
+    if (confirmButton == null) {
+      throw new Error("Confirm button not found");
+    }
+    confirmButton.click();
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    const entry = getLastHistoryEntry();
+    await expect(entry).toBeDefined();
+    const { targetId, targetType } = getHistoryEntryTypeAndId(entry);
+    await expect(dynamicProperties.targetBoardId).toBe(targetId);
+    await expect(targetType).toBe("DELETE");
+  },
+  "should log create list to action history": async () => {
+  },
+  "should log update list to action history": async () => {
+  },
+  "should log delete list to action history": async () => {
   },
   "should log create task to action history": async () => {
   },

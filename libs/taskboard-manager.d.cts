@@ -86,7 +86,6 @@ declare class TaskListRecord extends DataRecord {
     order: number;
     color: string;
     name: string;
-    description: string;
     colorDisplay: TaskListColorDisplay;
     useCustomBackgroundColor: boolean;
     backgroundColor: string;

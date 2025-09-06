@@ -2,6 +2,9 @@ declare const _default: {
     'should log create board to action history': () => Promise<void>;
     'should log update board to action history': () => Promise<void>;
     'should log delete board to action history': () => Promise<void>;
+    'should log create list to action history': () => Promise<void>;
+    'should log update list to action history': () => Promise<void>;
+    'should log delete list to action history': () => Promise<void>;
     'should log create task to action history': () => Promise<void>;
     'should log update task to action history': () => Promise<void>;
     'should log delete task to action history': () => Promise<void>;

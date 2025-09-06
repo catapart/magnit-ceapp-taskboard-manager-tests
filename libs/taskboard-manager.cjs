@@ -2424,7 +2424,7 @@ var TaskListRecord = class extends DataRecord {
   order = -1;
   color = "#1C67E8";
   name = "New List";
-  description = "";
+  // description: string = "";
   colorDisplay = "element" /* Element */;
   useCustomBackgroundColor = false;
   backgroundColor = "#f9faf5";
@@ -3580,7 +3580,6 @@ var BoardChannel = class extends DataChannel {
       listData[0].boardId = board.id;
       listData[0].order = i;
       listData[0].name = DEFAULT_LISTS[i].name;
-      listData[0].description = DEFAULT_LISTS[i].description;
       listData[0].color = DEFAULT_LISTS[i].color;
       lists.push(listData);
     }
@@ -4230,7 +4229,12 @@ var TaskboardManagerElementData = class {
   }
   // actions    
   boardUpdate_getActionProperties(board, taskLists, taskSettings, image) {
-    const boardDiff = Object.fromEntries(Object.entries(board.existing).filter(([key, value]) => value !== board.updated[key]));
+    const boardDiff = Object.fromEntries(Object.entries(board.existing).filter(([key, value]) => {
+      if (key.toLowerCase().indexOf("color") != -1 && typeof value == "string" && value.startsWith("#")) {
+        return value.toLowerCase() !== board.updated[key].toLowerCase();
+      }
+      return value !== board.updated[key];
+    }));
     const board_changedValues = /* @__PURE__ */ new Map();
     for (const [key, value] of Object.entries(boardDiff)) {
       board_changedValues.set(key, { from: value, to: board.updated[key] });
@@ -4285,7 +4289,12 @@ var TaskboardManagerElementData = class {
         if (existingList == null || updatedList == null) {
           continue;
         }
-        const listDiff = Object.fromEntries(Object.entries(existingList).filter(([key, value]) => value !== updatedList[key]));
+        const listDiff = Object.fromEntries(Object.entries(existingList).filter(([key, value]) => {
+          if (key.toLowerCase().indexOf("color") != -1 && typeof value == "string" && value.startsWith("#")) {
+            return value.toLowerCase() !== updatedList[key].toLowerCase();
+          }
+          return value !== updatedList[key];
+        }));
         const list_changedValues = /* @__PURE__ */ new Map();
         for (const [key, value] of Object.entries(listDiff)) {
           list_changedValues.set(key, { from: value, to: updatedList[key] });
@@ -4307,7 +4316,12 @@ var TaskboardManagerElementData = class {
         if (existingSettings == null || updatedSettings == null) {
           continue;
         }
-        const settingsDiff = Object.fromEntries(Object.entries(existingSettings).filter(([key, value]) => value !== updatedSettings[key]));
+        const settingsDiff = Object.fromEntries(Object.entries(existingSettings).filter(([key, value]) => {
+          if (key.toLowerCase().indexOf("color") != -1 && typeof value == "string" && value.startsWith("#")) {
+            return value.toLowerCase() !== updatedSettings[key].toLowerCase();
+          }
+          return value !== updatedSettings[key];
+        }));
         const settings_changedValues = /* @__PURE__ */ new Map();
         for (const [key, value] of Object.entries(settingsDiff)) {
           settings_changedValues.set(key, { from: value, to: updatedSettings[key] });
@@ -4421,7 +4435,6 @@ var TaskboardManagerElementData = class {
         list.order = listData.order ?? i;
         list.color = listData.color ?? list.color;
         list.name = listData.name ?? list.name;
-        list.description = listData.description ?? list.description;
         list.colorDisplay = listData.colorDisplay ?? list.colorDisplay;
         list.useCustomBackgroundColor = listData.useCustomBackgroundColor ?? list.useCustomBackgroundColor;
         list.backgroundColor = listData.backgroundColor ?? list.backgroundColor;
@@ -11039,11 +11052,13 @@ var TaskboardManagerElement = class extends HTMLElement {
       { existing: existingTaskLists, updated: taskLists },
       { existing: existingTaskSettings, updated: taskSettings }
     );
-    if (boardActionProperties != null && imageUpdates.length > 0) {
-      if (boardActionProperties.backgroundImages != null) {
-        boardActionProperties.backgroundImages = boardActionProperties.backgroundImages.concat(imageUpdates);
-      } else if (boardActionProperties.backgroundImages == null) {
-        boardActionProperties.backgroundImages = imageUpdates;
+    if (boardActionProperties != null) {
+      if (imageUpdates.length > 0) {
+        if (boardActionProperties.backgroundImages != null) {
+          boardActionProperties.backgroundImages = boardActionProperties.backgroundImages.concat(imageUpdates);
+        } else if (boardActionProperties.backgroundImages == null) {
+          boardActionProperties.backgroundImages = imageUpdates;
+        }
       }
       await configPanel.addActionHistoryEntry(HistoryEntryType.Update, "board" /* Board */, boardActionProperties);
     }
@@ -11354,8 +11369,7 @@ var TaskboardManagerElement = class extends HTMLElement {
         element.style.removeProperty("--list-width");
         element.style.removeProperty("flex-grow");
       }
-      const listTitle = list.description == null || list.description.trim() == "" ? list.name : list.description;
-      element.setAttribute("title", listTitle);
+      element.setAttribute("title", list.name);
       if (list.useCustomBackgroundColor == true) {
         element.style.setProperty("--list-background-color", list.backgroundColor);
       } else {
