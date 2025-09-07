@@ -13,6 +13,7 @@ const dynamicProperties: {
     targetBoardId: undefined,
 }
 
+
 async function initializeBoard()
 {
     await target.clearData(false);
@@ -122,7 +123,7 @@ export default {
             throw new Error('Save button not found');
         }
         saveButton.click();
-        await new Promise(resolve => setTimeout(resolve, 300));
+        await new Promise(resolve => setTimeout(resolve, 1000));
 
 
         // check history
@@ -183,6 +184,51 @@ export default {
 
     'should log create list to action history': async () =>
     {
+        if(dynamicProperties.targetBoardId == null)
+        {
+            await initializeBoard();
+        }
+
+        // edit board
+        const boardElement = appMenu.shadowRoot!.querySelector<HTMLElement>('.board');
+        if(boardElement == null)
+        {
+            throw new Error('Board not found');
+        }
+        
+        const editButton = boardElement.querySelector<HTMLButtonElement>('.edit');
+        if(editButton == null)
+        {
+            throw new Error('Edit button not found');
+        }
+        editButton.click();
+        await new Promise(resolve => setTimeout(resolve, 300));
+
+        const addListButton = boardSettingsPanel.shadowRoot!.querySelector<HTMLButtonElement>('#add-list-button');
+        if(addListButton == null)
+        {
+            throw new Error('Add List button not found');
+        }
+        addListButton.click();
+        await new Promise(resolve => setTimeout(resolve, 300));
+
+        const confirmButton = target.shadowRoot!.querySelector<HTMLButtonElement>('#confirmation-confirm-button');
+        if(confirmButton == null)
+        {
+            throw new Error('Confirm button not found');
+        }
+        console.log(confirmButton);
+        confirmButton.click();
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
+
+        // check history
+        const entry = getLastHistoryEntry();
+        await expect(entry).toBeDefined();
+
+        const { targetId, targetType } = getHistoryEntryTypeAndId(entry);
+        await expect(dynamicProperties.targetBoardId).toBe(targetId);
+        await expect(targetType).toBe('UPDATE');
     },
     'should log update list to action history': async () =>
     {

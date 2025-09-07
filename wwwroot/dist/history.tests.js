@@ -85,7 +85,7 @@ var history_tests_default = {
       throw new Error("Save button not found");
     }
     saveButton.click();
-    await new Promise((resolve) => setTimeout(resolve, 300));
+    await new Promise((resolve) => setTimeout(resolve, 1e3));
     const entry = getLastHistoryEntry();
     await expect(entry).toBeDefined();
     const { targetId, targetType } = getHistoryEntryTypeAndId(entry);
@@ -125,6 +125,37 @@ var history_tests_default = {
     await expect(targetType).toBe("DELETE");
   },
   "should log create list to action history": async () => {
+    if (dynamicProperties.targetBoardId == null) {
+      await initializeBoard();
+    }
+    const boardElement = appMenu.shadowRoot.querySelector(".board");
+    if (boardElement == null) {
+      throw new Error("Board not found");
+    }
+    const editButton = boardElement.querySelector(".edit");
+    if (editButton == null) {
+      throw new Error("Edit button not found");
+    }
+    editButton.click();
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    const addListButton = boardSettingsPanel.shadowRoot.querySelector("#add-list-button");
+    if (addListButton == null) {
+      throw new Error("Add List button not found");
+    }
+    addListButton.click();
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    const confirmButton = target.shadowRoot.querySelector("#confirmation-confirm-button");
+    if (confirmButton == null) {
+      throw new Error("Confirm button not found");
+    }
+    console.log(confirmButton);
+    confirmButton.click();
+    await new Promise((resolve) => setTimeout(resolve, 2e3));
+    const entry = getLastHistoryEntry();
+    await expect(entry).toBeDefined();
+    const { targetId, targetType } = getHistoryEntryTypeAndId(entry);
+    await expect(dynamicProperties.targetBoardId).toBe(targetId);
+    await expect(targetType).toBe("UPDATE");
   },
   "should log update list to action history": async () => {
   },
