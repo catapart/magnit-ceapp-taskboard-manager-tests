@@ -5,7 +5,7 @@ import {
 import {
   getAllAppData,
   initResources
-} from "./chunk-Y2HPBQSX.js";
+} from "./chunk-R2DHCA5W.js";
 
 // src/utility.tests.ts
 var manager = document.querySelector("taskboard-manager");

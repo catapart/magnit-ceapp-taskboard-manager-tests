@@ -1,10 +1,22 @@
 import {
+  awaitFrames,
+  dynamicProperties,
   getAllAppData,
   getAllData,
-  initResources
-} from "./chunk-Y2HPBQSX.js";
+  initResources,
+  initializeTargetBoard,
+  initializeTargetList,
+  initializeTargetTask,
+  staticProperties
+} from "./chunk-R2DHCA5W.js";
 export {
+  awaitFrames,
+  dynamicProperties,
   getAllAppData,
   getAllData,
-  initResources
+  initResources,
+  initializeTargetBoard,
+  initializeTargetList,
+  initializeTargetTask,
+  staticProperties
 };
