@@ -9,9 +9,11 @@ var configPanel = target.shadowRoot.querySelector("config-panel");
 var historyPanel = configPanel.shadowRoot.querySelector("history-panel");
 var boardSettingsPanel = target.shadowRoot.querySelector("board-settings");
 var dynamicProperties = {
-  targetBoardId: void 0
+  targetBoardId: void 0,
+  targetListId: void 0,
+  targetTaskId: void 0
 };
-async function initializeBoard() {
+async function initializeTargetBoard() {
   await target.clearData(false);
   const newBoardButton = appMenu.shadowRoot.querySelector(".new-board-button");
   newBoardButton.click();
@@ -30,14 +32,83 @@ async function initializeBoard() {
     resolve(route.substring(6));
   });
 }
-function getLastHistoryEntry() {
-  const openSettingsButton = appMenu.shadowRoot.querySelector("#open-settings-button");
-  const historyNavItem = configPanel.shadowRoot.querySelector("#history-nav-item");
-  openSettingsButton.click();
-  historyNavItem.click();
-  const entries = historyPanel.shadowRoot.querySelectorAll(`[data-entry]`);
-  const entry = entries[entries.length - 1];
-  return entry;
+async function initializeTargetList() {
+  if (dynamicProperties.targetBoardId == null) {
+    await initializeTargetBoard();
+  }
+  const boardElement = appMenu.shadowRoot.querySelector(".board");
+  if (boardElement == null) {
+    throw new Error("Board not found");
+  }
+  const editButton = boardElement.querySelector(".edit");
+  if (editButton == null) {
+    throw new Error("Edit button not found");
+  }
+  editButton.click();
+  await new Promise((resolve) => setTimeout(resolve, 300));
+  const addListButton = boardSettingsPanel.shadowRoot.querySelector("#add-list-button");
+  if (addListButton == null) {
+    throw new Error("Add List button not found");
+  }
+  addListButton.click();
+  await awaitFrames();
+  const confirmButton = boardSettingsPanel.shadowRoot.querySelector("#board-settings-save");
+  if (confirmButton == null) {
+    throw new Error("Confirm button not found");
+  }
+  confirmButton.click();
+  await awaitFrames(15);
+  const lists = [...target.shadowRoot.querySelectorAll("task-list")];
+  const list = lists.pop();
+  dynamicProperties.targetListId = list?.getAttribute("data-tasklist-id") ?? void 0;
+}
+async function initializeTargetTask() {
+  if (dynamicProperties.targetBoardId == null) {
+    await initializeTargetBoard();
+  }
+  const boardElement = appMenu.shadowRoot.querySelector(".board");
+  if (boardElement == null) {
+    throw new Error("Board not found");
+  }
+  boardElement.click();
+  await awaitFrames();
+  const addTaskButton = target.shadowRoot.querySelector(".add-task-button");
+  if (addTaskButton == null) {
+    throw new Error("Add Task button not found");
+  }
+  addTaskButton.click();
+  await awaitFrames(15);
+  const task = target.shadowRoot.querySelector("task-card");
+  if (task == null) {
+    throw new Error("Task not found");
+  }
+  dynamicProperties.targetTaskId = task.dataset.taskId;
+}
+async function awaitFrames(framesToAwait = 1) {
+  let framesAwaited = 0;
+  return new Promise((resolve) => {
+    const requestCallback = () => {
+      framesAwaited++;
+      if (framesAwaited < framesToAwait) {
+        requestAnimationFrame(requestCallback);
+        return;
+      }
+      resolve();
+    };
+    requestAnimationFrame(requestCallback);
+  });
+}
+async function getLastHistoryEntry(framesToAwait = 1) {
+  return new Promise(async (resolve) => {
+    await awaitFrames(framesToAwait);
+    const openSettingsButton = appMenu.shadowRoot.querySelector("#open-settings-button");
+    const historyNavItem = configPanel.shadowRoot.querySelector("#history-nav-item");
+    openSettingsButton.click();
+    historyNavItem.click();
+    const entries = historyPanel.shadowRoot.querySelectorAll(`[data-entry]`);
+    const entry = entries[entries.length - 1];
+    resolve(entry);
+  });
 }
 function getHistoryEntryTypeAndId(entry) {
   const targetIdElement = entry.querySelector(".target-id");
@@ -49,8 +120,8 @@ function getHistoryEntryTypeAndId(entry) {
 var history_tests_default = {
   "should log create board to action history": async () => {
     try {
-      await initializeBoard();
-      const entry = getLastHistoryEntry();
+      await initializeTargetBoard();
+      const entry = await getLastHistoryEntry();
       await expect(entry).toBeDefined();
       const targetIdElement = entry.querySelector(".target-id");
       await expect(targetIdElement).toBeDefined();
@@ -63,7 +134,7 @@ var history_tests_default = {
   },
   "should log update board to action history": async () => {
     if (dynamicProperties.targetBoardId == null) {
-      await initializeBoard();
+      await initializeTargetBoard();
     }
     const boardElement = appMenu.shadowRoot.querySelector(".board");
     if (boardElement == null) {
@@ -86,7 +157,7 @@ var history_tests_default = {
     }
     saveButton.click();
     await new Promise((resolve) => setTimeout(resolve, 1e3));
-    const entry = getLastHistoryEntry();
+    const entry = await getLastHistoryEntry();
     await expect(entry).toBeDefined();
     const { targetId, targetType } = getHistoryEntryTypeAndId(entry);
     await expect(dynamicProperties.targetBoardId).toBe(targetId);
@@ -94,7 +165,7 @@ var history_tests_default = {
   },
   "should log delete board to action history": async () => {
     if (dynamicProperties.targetBoardId == null) {
-      await initializeBoard();
+      await initializeTargetBoard();
     }
     const boardElement = appMenu.shadowRoot.querySelector(".board");
     if (boardElement == null) {
@@ -118,15 +189,60 @@ var history_tests_default = {
     }
     confirmButton.click();
     await new Promise((resolve) => setTimeout(resolve, 300));
-    const entry = getLastHistoryEntry();
+    const entry = await getLastHistoryEntry();
     await expect(entry).toBeDefined();
     const { targetId, targetType } = getHistoryEntryTypeAndId(entry);
     await expect(dynamicProperties.targetBoardId).toBe(targetId);
     await expect(targetType).toBe("DELETE");
   },
   "should log create list to action history": async () => {
-    if (dynamicProperties.targetBoardId == null) {
-      await initializeBoard();
+    if (dynamicProperties.targetListId == null) {
+      await initializeTargetList();
+    }
+    const entry = await getLastHistoryEntry();
+    await expect(entry).toBeDefined();
+    const { targetId, targetType } = getHistoryEntryTypeAndId(entry);
+    await expect(dynamicProperties.targetListId).toBe(targetId);
+    await expect(targetType).toBe("CREATE");
+  },
+  "should log update list to action history": async () => {
+    if (dynamicProperties.targetListId == null) {
+      await initializeTargetList();
+    }
+    const boardElement = appMenu.shadowRoot.querySelector(".board");
+    if (boardElement == null) {
+      throw new Error("Board not found");
+    }
+    const editButton = boardElement.querySelector(".edit");
+    if (editButton == null) {
+      throw new Error("Edit button not found");
+    }
+    editButton.click();
+    await awaitFrames();
+    const listSettings = target.shadowRoot.querySelector(`[tasklist-record-id="${dynamicProperties.targetListId}"]`);
+    if (listSettings == null) {
+      throw new Error("List settings not found");
+    }
+    const listNameInput = listSettings.shadowRoot.querySelector(".input.name");
+    if (listNameInput == null) {
+      throw new Error("List name input not found");
+    }
+    listNameInput.value = "Test list name";
+    const saveButton = boardSettingsPanel.shadowRoot.querySelector(".action-button.ok");
+    if (saveButton == null) {
+      throw new Error("Save button not found");
+    }
+    saveButton.click();
+    await new Promise((resolve) => setTimeout(resolve, 1e3));
+    const entry = await getLastHistoryEntry();
+    await expect(entry).toBeDefined();
+    const { targetId, targetType } = getHistoryEntryTypeAndId(entry);
+    await expect(dynamicProperties.targetListId).toBe(targetId);
+    await expect(targetType).toBe("UPDATE");
+  },
+  "should log delete list to action history": async () => {
+    if (dynamicProperties.targetListId == null) {
+      await initializeTargetList();
     }
     const boardElement = appMenu.shadowRoot.querySelector(".board");
     if (boardElement == null) {
@@ -138,34 +254,78 @@ var history_tests_default = {
     }
     editButton.click();
     await new Promise((resolve) => setTimeout(resolve, 300));
-    const addListButton = boardSettingsPanel.shadowRoot.querySelector("#add-list-button");
-    if (addListButton == null) {
-      throw new Error("Add List button not found");
+    const listSettings = target.shadowRoot.querySelector(`[tasklist-record-id="${dynamicProperties.targetListId}"]`);
+    if (listSettings == null) {
+      throw new Error("List settings not found");
     }
-    addListButton.click();
+    const deleteButton = listSettings.shadowRoot.querySelector("#tasklist-settings-remove-button");
+    if (deleteButton == null) {
+      throw new Error("Delete button not found");
+    }
+    deleteButton.click();
     await new Promise((resolve) => setTimeout(resolve, 300));
-    const confirmButton = target.shadowRoot.querySelector("#confirmation-confirm-button");
-    if (confirmButton == null) {
-      throw new Error("Confirm button not found");
+    const saveButton = boardSettingsPanel.shadowRoot.querySelector(".action-button.ok");
+    if (saveButton == null) {
+      throw new Error("Save button not found");
     }
-    console.log(confirmButton);
-    confirmButton.click();
-    await new Promise((resolve) => setTimeout(resolve, 2e3));
-    const entry = getLastHistoryEntry();
+    saveButton.click();
+    await new Promise((resolve) => setTimeout(resolve, 1e3));
+    const entry = await getLastHistoryEntry();
     await expect(entry).toBeDefined();
     const { targetId, targetType } = getHistoryEntryTypeAndId(entry);
-    await expect(dynamicProperties.targetBoardId).toBe(targetId);
-    await expect(targetType).toBe("UPDATE");
-  },
-  "should log update list to action history": async () => {
-  },
-  "should log delete list to action history": async () => {
+    await expect(dynamicProperties.targetListId).toBe(targetId);
+    await expect(targetType).toBe("DELETE");
   },
   "should log create task to action history": async () => {
+    if (dynamicProperties.targetTaskId == null) {
+      await initializeTargetTask();
+    }
+    const entry = await getLastHistoryEntry();
+    await expect(entry).toBeDefined();
+    const { targetId, targetType } = getHistoryEntryTypeAndId(entry);
+    await expect(dynamicProperties.targetTaskId).toBe(targetId);
+    await expect(targetType).toBe("CREATE");
   },
   "should log update task to action history": async () => {
+    if (dynamicProperties.targetTaskId == null) {
+      await initializeTargetTask();
+    }
+    const task = target.shadowRoot.querySelector("task-card");
+    if (task == null) {
+      throw new Error("Task not found");
+    }
+    const taskDescription = task.shadowRoot.querySelector("#description");
+    if (taskDescription == null) {
+      throw new Error("Task description not found");
+    }
+    taskDescription.textContent = "Task content";
+    taskDescription.blur();
+    await awaitFrames();
+    const entry = await getLastHistoryEntry();
+    await expect(entry).toBeDefined();
+    const { targetId, targetType } = getHistoryEntryTypeAndId(entry);
+    await expect(dynamicProperties.targetTaskId).toBe(targetId);
+    await expect(targetType).toBe("UPDATE");
   },
   "should log delete task to action history": async () => {
+    if (dynamicProperties.targetTaskId == null) {
+      await initializeTargetTask();
+    }
+    const task = target.shadowRoot.querySelector("task-card");
+    if (task == null) {
+      throw new Error("Task not found");
+    }
+    const removeButton = task.shadowRoot.querySelector("#remove-button");
+    if (removeButton == null) {
+      throw new Error("Task remove button not found");
+    }
+    removeButton.click();
+    await awaitFrames();
+    const entry = await getLastHistoryEntry();
+    await expect(entry).toBeDefined();
+    const { targetId, targetType } = getHistoryEntryTypeAndId(entry);
+    await expect(dynamicProperties.targetTaskId).toBe(targetId);
+    await expect(targetType).toBe("DELETE");
   },
   "should undo create board": async () => {
   },
